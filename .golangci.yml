@@ -1,0 +1,164 @@
+# golangci-lint configuration
+# See https://golangci-lint.run/usage/configuration/
+
+run:
+  timeout: 5m
+  tests: true
+  skip-dirs:
+    - vendor
+    - bin
+    - dist
+  skip-files:
+    - ".*\\.pb\\.go$"
+    - ".*_generated\\.go$"
+
+output:
+  format: colored-line-number
+  print-issued-lines: true
+  print-linter-name: true
+  uniq-by-line: true
+  sort-results: true
+
+linters-settings:
+  # Cyclomatic complexity
+  cyclop:
+    max-complexity: 15
+    package-average: 10.0
+    skip-tests: true
+
+  # Duplicate code detection
+  dupl:
+    threshold: 100
+
+  # Function length
+  funlen:
+    lines: 100
+    statements: 50
+
+  # Cognitive complexity
+  gocognit:
+    min-complexity: 15
+
+  # Cyclomatic complexity (alternative)
+  gocyclo:
+    min-complexity: 15
+
+  # Line length
+  lll:
+    line-length: 120
+
+  # Naming conventions
+  revive:
+    rules:
+      - name: exported
+        disabled: false
+      - name: package-comments
+        disabled: false
+      - name: var-naming
+        disabled: false
+
+  # Unused code
+  unparam:
+    check-exported: false
+
+  # Whitespace
+  wsl:
+    strict-append: true
+    allow-assign-and-call: true
+    allow-multiline-assign: true
+    force-case-trailing-whitespace: 0
+
+linters:
+  enable:
+    # Default linters
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - typecheck
+    - unused
+    
+    # Additional useful linters
+    - bodyclose
+    - cyclop
+    - dupl
+    - durationcheck
+    - errorlint
+    - exhaustive
+    - exportloopref
+    - forbidigo
+    - funlen
+    - gochecknoinits
+    - gocognit
+    - goconst
+    - gocritic
+    - gocyclo
+    - godot
+    - gofmt
+    - goimports
+    - gomnd
+    - goprintffuncname
+    - gosec
+    - lll
+    - makezero
+    - misspell
+    - nakedret
+    - nestif
+    - nilerr
+    - nlreturn
+    - noctx
+    - prealloc
+    - predeclared
+    - revive
+    - rowserrcheck
+    - sqlclosecheck
+    - tparallel
+    - unconvert
+    - unparam
+    - wastedassign
+    - whitespace
+    - wsl
+
+  disable:
+    # Disable linters that might be too strict for some projects
+    - gochecknoglobals
+    - goerr113
+    - golint
+    - interfacer
+    - maligned
+    - scopelint
+
+issues:
+  # Excluding configuration per-path, per-linter, per-text and per-source
+  exclude-rules:
+    # Exclude some linters from running on tests files
+    - path: _test\.go
+      linters:
+        - gomnd
+        - goconst
+        - funlen
+        - dupl
+        - lll
+
+    # Exclude some linters from running on main functions
+    - path: cmd/
+      linters:
+        - gochecknoinits
+
+    # Exclude magic number warnings for common values
+    - text: "Magic number: (0|1|2|10|100|1000)"
+      linters:
+        - gomnd
+
+  # Show only new issues
+  new: false
+
+  # Maximum issues count per one linter
+  max-issues-per-linter: 0
+
+  # Maximum count of issues with the same text
+  max-same-issues: 0
+
+  # Fix found issues (if it's supported by the linter)
+  fix: true
