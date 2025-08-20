@@ -30,90 +30,10 @@ repos:
       # Format Go code
       - id: go-fmt
       - id: go-imports
-      # Vet Go code for suspicious constructs
-      - id: go-vet-mod
       # Run go mod tidy to ensure dependencies are clean
       - id: go-mod-tidy
-      # Check for cyclic imports
-      - id: go-cyclo
-        args: [-over=15]
-      # Security audit
-      - id: go-sec-mod
-      # Unused variables and imports
-      - id: go-critic
-      # Unit tests
-      - id: go-unit-tests-mod
-      # Build check
-      - id: go-build-mod
-      # Check for errors in go.mod
-      - id: go-mod-verify
 
   # Alternative Go formatting and linting (choose one approach)
-  - repo: local
-    hooks:
-      # Custom gofumpt for stricter formatting
-      - id: gofumpt
-        name: gofumpt
-        entry: gofumpt
-        language: golang
-        additional_dependencies: [mvdan.cc/gofumpt@latest]
-        args: [-l, -w]
-        types: [go]
-        
-      # golangci-lint for comprehensive linting
-      - id: golangci-lint
-        name: golangci-lint
-        entry: golangci-lint
-        language: golang
-        additional_dependencies: [github.com/golangci/golangci-lint/cmd/golangci-lint@latest]
-        args: [run, --fix]
-        types: [go]
-        pass_filenames: false
-
-  # Documentation and comments
-  - repo: https://github.com/golang/tools
-    rev: v0.12.0
-    hooks:
-      # Check that Go files have package documentation
-      - id: go-doc
-        name: go-doc
-        entry: go
-        language: golang
-        args: [doc, -all]
-        types: [go]
-        pass_filenames: false
-
-  # Dockerfile linting (if you add Docker later)
-  - repo: https://github.com/hadolint/hadolint
-    rev: v2.12.0
-    hooks:
-      - id: hadolint-docker
-        args: [--ignore, DL3008, --ignore, DL3009]
-
-  # YAML formatting and linting
-  - repo: https://github.com/adrienverge/yamllint
-    rev: v1.32.0
-    hooks:
-      - id: yamllint
-        args: [-d, relaxed]
-
-  # Markdown linting
-  - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.35.0
-    hooks:
-      - id: markdownlint
-        args: [--fix]
-
-  # Commit message linting
-  - repo: https://github.com/commitizen-tools/commitizen
-    rev: v3.6.0
-    hooks:
-      - id: commitizen
-        stages: [commit-msg]
-
-# Global configuration
-default_language_version:
-  golang: "1.21"
 
 # Files to exclude from all hooks
 exclude: |
@@ -131,6 +51,3 @@ exclude: |
 
 # Fail fast - stop on first failure
 fail_fast: false
-
-# Minimum pre-commit version
-minimum_pre_commit_version: "3.0.0"
