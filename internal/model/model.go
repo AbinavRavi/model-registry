@@ -7,14 +7,14 @@ import (
 )
 
 type RegisterModelMetadata struct {
-	Name              string    `json:"name"`
-	Version           string    `json:"version"`
-	CreatedAt         time.Time `json:"created_at"`
-	ModelPath         string    `json:"model_path"`
-	ModelPathLocation string    `json:"model_path_location"`
-	MetricName        string    `json:"metric_name"`
-	MetricValue       float64   `json:"metric_value"`
-	DatasetSource     string    `json:"dataset_source"`
+	Name              string     `json:"name"`
+	Version           string     `json:"version"`
+	CreatedAt         *time.Time `json:"created_at,omitempty"`
+	ModelPath         string     `json:"model_path"`
+	ModelPathLocation string     `json:"model_path_location"`
+	MetricName        string     `json:"metric_name"`
+	MetricValue       float64    `json:"metric_value"`
+	DatasetSource     string     `json:"dataset_source"`
 }
 
 type HealthCheckResponse struct {
