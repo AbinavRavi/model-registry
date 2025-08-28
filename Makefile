@@ -25,6 +25,12 @@ BUILD_FLAGS = -v
 # Default target
 all: build
 
+migration-up:
+	migrate -path db/migrations -database "sqlite3://./test.db" up
+
+migration-down:
+	migrate -path db/migrations -database "sqlite3://./test.db" down 1
+
 # Build all binaries
 build: build-server build-cli
 	@echo "Build completed successfully!"

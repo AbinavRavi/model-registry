@@ -1,9 +1,5 @@
 package main
 
-// import (
-// 	"github.com/AbinavRavi/model-registry/internal/models"
-// )
-
 import (
 	"fmt"
 	"model-registry/internal/routes"

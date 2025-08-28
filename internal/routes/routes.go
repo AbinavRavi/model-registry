@@ -55,35 +55,36 @@ func RegisterModel(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	// Create table if it doesn’t exist
-	createTable := `
-	CREATE TABLE IF NOT EXISTS model_metadata (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		name TEXT NOT NULL,
-		version TEXT NOT NULL,
-		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-		model_path TEXT NOT NULL,
-		model_path_location TEXT NOT NULL,
-		metric_name TEXT NOT NULL,
-		dataset_source TEXT NOT NULL
-	);`
+	// createTable := `
+	// CREATE TABLE IF NOT EXISTS model_metadata (
+	// 	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	// 	name TEXT NOT NULL,
+	// 	version TEXT NOT NULL,
+	// 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	// 	model_path TEXT NOT NULL,
+	// 	model_path_location TEXT NOT NULL,
+	// 	metric_name TEXT NOT NULL,
+	// 	dataset_source TEXT NOT NULL
+	// );`
 
-	_, err = db.Exec(createTable)
-	if err != nil {
-		slog.Error("failed to create table", "err", err)
-	}
+	// _, err = db.Exec(createTable)
+	// if err != nil {
+	// 	slog.Error("failed to create table", "err", err)
+	// }
 
 	m := model.RegisterModelMetadata{
 		Name:              metadata.Name,
 		Version:           metadata.Version,
 		CreatedAt:         ptrTime(time.Now()),
 		ModelPath:         metadata.ModelPath,
-		ModelPathLocation: metadata.ModelPathLocation,
+		ContainerLocation: metadata.ContainerLocation,
 		MetricName:        metadata.MetricName,
+		MetricValue:       metadata.MetricValue,
 		DatasetSource:     metadata.DatasetSource,
 	}
 
-	_, err = db.Exec("INSERT INTO model_metadata (name, version, created_at, model_path, model_path_location, metric_name, dataset_source) VALUES (?, ?, ?, ?, ?, ?, ?)",
-		m.Name, m.Version, m.CreatedAt, m.ModelPath, m.ModelPathLocation, m.MetricName, m.DatasetSource)
+	_, err = db.Exec("INSERT INTO model_metadata (name, version, created_at, model_path, container_location, metric_name, metric_value, dataset_source) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+		m.Name, m.Version, m.CreatedAt, m.ModelPath, m.ContainerLocation, m.MetricName, m.MetricValue, m.DatasetSource)
 	if err != nil {
 		slog.Error("failed to insert data", "err", err)
 	}

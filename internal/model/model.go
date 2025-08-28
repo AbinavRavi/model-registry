@@ -11,7 +11,7 @@ type RegisterModelMetadata struct {
 	Version           string     `json:"version"`
 	CreatedAt         *time.Time `json:"created_at,omitempty"`
 	ModelPath         string     `json:"model_path"`
-	ModelPathLocation string     `json:"model_path_location"`
+	ContainerLocation string     `json:"container_location"`
 	MetricName        string     `json:"metric_name"`
 	MetricValue       float64    `json:"metric_value"`
 	DatasetSource     string     `json:"dataset_source"`
