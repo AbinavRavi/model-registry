@@ -7,9 +7,10 @@ import (
 	"log/slog"
 	"model-registry/internal/model"
 	"net/http"
+	"os"
 	"time"
 
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/lib/pq"
 )
 
 func RegisterRoutes() {
@@ -47,30 +48,22 @@ func RegisterModel(w http.ResponseWriter, r *http.Request) {
 
 	// Here you would typically save the metadata to a database or file system
 	// I am currently using SQlite will need to replace connection string etc for an actual DB
-
-	db, err := sql.Open("sqlite3", "./test.db")
+	user := os.Getenv("DB_USER")
+	password := os.Getenv("DB_PASSWORD")
+	dbname := os.Getenv("DB_NAME")
+	host := os.Getenv("DB_HOST")
+	port := os.Getenv("DB_PORT")
+	connStr := fmt.Sprintf(
+		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		host, port, user, password, dbname,
+	)
+	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		slog.Error("failed to open database", "err", err)
+		http.Error(w, "Database connection failed", http.StatusInternalServerError)
+		return
 	}
 	defer db.Close()
-
-	// Create table if it doesn’t exist
-	// createTable := `
-	// CREATE TABLE IF NOT EXISTS model_metadata (
-	// 	id INTEGER PRIMARY KEY AUTOINCREMENT,
-	// 	name TEXT NOT NULL,
-	// 	version TEXT NOT NULL,
-	// 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	// 	model_path TEXT NOT NULL,
-	// 	model_path_location TEXT NOT NULL,
-	// 	metric_name TEXT NOT NULL,
-	// 	dataset_source TEXT NOT NULL
-	// );`
-
-	// _, err = db.Exec(createTable)
-	// if err != nil {
-	// 	slog.Error("failed to create table", "err", err)
-	// }
 
 	m := model.RegisterModelMetadata{
 		Name:              metadata.Name,
@@ -83,7 +76,7 @@ func RegisterModel(w http.ResponseWriter, r *http.Request) {
 		DatasetSource:     metadata.DatasetSource,
 	}
 
-	_, err = db.Exec("INSERT INTO model_metadata (name, version, created_at, model_path, container_location, metric_name, metric_value, dataset_source) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+	_, err = db.Exec("INSERT INTO model_metadata (name, version, created_at, model_path, container_location, metric_name, metric_value, dataset_source) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
 		m.Name, m.Version, m.CreatedAt, m.ModelPath, m.ContainerLocation, m.MetricName, m.MetricValue, m.DatasetSource)
 	if err != nil {
 		slog.Error("failed to insert data", "err", err)

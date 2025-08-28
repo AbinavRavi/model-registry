@@ -26,10 +26,10 @@ BUILD_FLAGS = -v
 all: build
 
 migration-up:
-	migrate -path db/migrations -database "sqlite3://./test.db" up
+	migrate -path db/migrations -database "postgres://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable" up
 
 migration-down:
-	migrate -path db/migrations -database "sqlite3://./test.db" down 1
+	migrate -path db/migrations -database "postgres://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable" down 1
 
 # Build all binaries
 build: build-server build-cli
@@ -81,59 +81,6 @@ deps:
 fmt:
 	@echo "Formatting code..."
 	$(GOFMT) ./...
-
-# Run go vet
-vet:
-	@echo "Running go vet..."
-	$(GOCMD) vet ./...
-
-# Run linter (requires golangci-lint)
-lint:
-	@echo "Running linter..."
-	golangci-lint run
-
-# Pre-commit hooks setup and management
-pre-commit-install:
-	@echo "Setting up pre-commit hooks..."
-	@if ! command -v pre-commit >/dev/null 2>&1; then \
-		echo "pre-commit is not installed. Installing via pip..."; \
-		pip install pre-commit; \
-	fi
-	@echo "Installing pre-commit hooks..."
-	pre-commit install
-	@echo "Installing commit-msg hook..."
-	pre-commit install --hook-type commit-msg
-	@if ! command -v golangci-lint >/dev/null 2>&1; then \
-		echo "golangci-lint is not installed. Installing..."; \
-		curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin v1.54.2; \
-	fi
-	@if ! command -v gofumpt >/dev/null 2>&1; then \
-		echo "gofumpt is not installed. Installing..."; \
-		go install mvdan.cc/gofumpt@latest; \
-	fi
-	@echo "Pre-commit setup completed!"
-	@echo ""
-	@echo "You can now:"
-	@echo "  - Run 'make pre-commit-run' to check all files"
-	@echo "  - Run 'make fmt' to format code"
-	@echo "  - Run 'make lint' to run linter"
-	@echo ""
-	@echo "Pre-commit hooks will automatically run on git commit."
-
-# Run pre-commit on all files
-pre-commit-run:
-	@echo "Running pre-commit on all files..."
-	pre-commit run --all-files
-
-# Check if pre-commit passes (useful for CI)
-pre-commit-check:
-	@echo "Checking pre-commit status..."
-	@if command -v pre-commit >/dev/null 2>&1; then \
-		pre-commit run --all-files; \
-	else \
-		echo "pre-commit is not installed. Run 'make pre-commit-install' first."; \
-		exit 1; \
-	fi
 
 # Initialize go module (run once)
 init:
